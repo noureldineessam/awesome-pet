@@ -132,3 +132,6 @@ dist
 
 #eslintrc
 .eslintrc.cjs
+
+#build
+/dist
