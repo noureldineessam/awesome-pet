@@ -135,3 +135,9 @@ dist
 
 #build
 /dist
+
+#prettier
+.prettierrc
+
+#vscode
+.vscode/
