@@ -7,9 +7,6 @@ import { ObjectId } from 'mongodb';
  * Interface representing a repository for `Pet` entities.
  */
 export interface IPetRepository {
-    /**
-     * Name of the data source or repository.
-     */
     dataSourceName: string;
 
     /**
