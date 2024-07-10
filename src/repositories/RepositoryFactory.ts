@@ -1,6 +1,8 @@
 import { IPetRepository } from './IPetRepository';
 import { JsonPetRepository } from './JsonPetRepository';
 import { Db } from 'mongodb';
+import { MongoPetRepository } from './MongoPetRepository';
+import { CompositePetRepository } from './CompositePetRepository';
 
 export class RepositoryFactory {
     /**
@@ -20,11 +22,15 @@ export class RepositoryFactory {
         */
 
             
-        switch(type) {
-            case 'json':
-                return new JsonPetRepository();
-            default:
-                throw new Error('Unknown repository type');
-        }
+            switch(type) {
+                case 'json':
+                    return new JsonPetRepository();
+                case 'db':
+                    return new MongoPetRepository();
+                case 'db_json':
+                    return new CompositePetRepository();
+                default:
+                    throw new Error('Unknown repository type');
+            }
     }
 }
