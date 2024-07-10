@@ -1,20 +1,42 @@
-import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import fs from 'fs';
-
 dotenv.config();
+import express from 'express';
+import morgan from 'morgan';
+import PetsRouter from './routes/PetsRouter'
+import { ErrorHandler } from './middlewares/ErrorHandler'
+import { WaitDatabaseConnection } from "./middlewares/waitDatabaseConnection"
+import { logger } from './utils/logger';
+import { startServer, gracefulShutdown } from './utils/server';
 
-const app: Express = express();
-const port = process.env.PORT;
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
+// Load configuration variables
+const repoType = process.env.REPO_TYPE || 'json';
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const ENV = process.env.NODE_ENV || 'development';
 
-app.get('/pets', (req: Request, res: Response) => {
-  res.json(JSON.parse(fs.readFileSync('./data/pets.json', { encoding: 'utf8', flag: 'r' })));
-});
+const app = express();
+app.use(express.json());
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+// Configure morgan based on environment
+if (ENV === 'development') {
+    app.use(morgan('dev'));
+} else {
+    app.use(morgan('combined'));
+}
+
+
+// if db is the only data store used, tell user that db is still intializing or it's down if it is
+if(repoType ==='db'){
+    app.use(WaitDatabaseConnection);
+}
+
+app.use(`/api`, PetsRouter)
+app.use(ErrorHandler);
+
+// Use logger instead of console.log
+logger.info('Server is starting...');
+
+startServer(app, Number(PORT))
+
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
