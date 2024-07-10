@@ -132,7 +132,6 @@ Update an existing pet.
 **Response**:
 
 -   `200 OK`: Returns the updated pet details.
--   `404 Not Found`: Pet not found.
 -   `400 Bad Request`: Validation error.
 -   `500 Internal Server Error`: General eror that includes `Pet not found`.
 
